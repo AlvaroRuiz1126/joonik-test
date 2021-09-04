@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { getTokenByPassword } from '../service/joonikApi';
 
-export const PasswordScreen = ({ navigation }) => {
+export const PasswordScreen = ({ navigation, route }) => {
     const [password, setPassword] = useState('');
 
     const handleInputChange = (inputTxt) => {
@@ -10,9 +10,13 @@ export const PasswordScreen = ({ navigation }) => {
     };
 
     const handleOnPress = () => {
-        getTokenByPassword(password, 'AVNcGAowXBFpbR08UiceCz13GAMQFmQVC1ltGhERH3NAUwhDWncBA312QGoCflhFdBUJHhNAcEdSB38BAExeZkxDCUcW').then(resp => {
+        getTokenByPassword(password, route.params.bearerToken).then(resp => {
             if(resp.token){
-                navigation.navigate('Home');
+                navigation.navigate('Home', {
+                    name: resp.name,
+                    token: resp.token
+                });
+                setPassword('');
             }else{
                 console.log("Contraseña ingresada incorrecta");
             }
@@ -21,7 +25,7 @@ export const PasswordScreen = ({ navigation }) => {
 
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={styles.emailText}>email@email.com</Text>
+            <Text style={styles.emailText}>{route.params.email}</Text>
             <Text style={styles.text}>Password</Text>
             <TextInput
                 secureTextEntry={true}
@@ -50,7 +54,8 @@ const styles = StyleSheet.create({
         marginTop: 30,
         color: '#707070',
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 16,
+        textTransform: 'uppercase'
     },
     input: {
         height: 40,
@@ -70,6 +75,7 @@ const styles = StyleSheet.create({
     },
     btnText: {
         color: '#FFFFFF',
-        fontSize: 16
+        fontSize: 16,
+        textTransform: 'uppercase'
     }
 });

@@ -1,6 +1,6 @@
 const BASE_URL = 'https://api.joonik.com';
 
-export const getTokenByEmail = async (email = '') => {
+export const getTokenByEmail = async (email) => {
     const resp = await fetch(`${BASE_URL}/login/email`, {
         method: 'POST',
         headers: {
@@ -13,7 +13,7 @@ export const getTokenByEmail = async (email = '') => {
     return data;
 };
 
-export const getTokenByPassword = async (password = '', bearerToken = '') => {
+export const getTokenByPassword = async (password, bearerToken) => {
     const resp = await fetch(`${BASE_URL}/login/password`, {
         method: 'POST',
         headers: {
@@ -24,5 +24,16 @@ export const getTokenByPassword = async (password = '', bearerToken = '') => {
     });
     const data = await resp.json();
 
+    return data;
+};
+
+export const getPostsWithToken = async (token) => {
+    const resp = await fetch(`${BASE_URL}/posts`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    const data = await resp.json();
+    
     return data;
 };

@@ -12,8 +12,11 @@ export const EmailScreen = ({navigation} ) => {
     const handleOnPress = () => {
         getTokenByEmail(email).then(resp => {
             if(resp.result){
-                console.log(resp.result);
-                navigation.navigate('Password');
+                navigation.navigate('Password', {
+                    email,
+                    bearerToken: resp.result
+                });
+                setEmail('');
             }else{
                 console.log("Email ingresado incorrecto");
             }
@@ -23,7 +26,12 @@ export const EmailScreen = ({navigation} ) => {
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Text style={styles.text}>Email</Text>
-            <TextInput style={styles.input} value={email} onChangeText={handleInputChange} />
+            <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={handleInputChange}
+                keyboardType={'email-address'}
+            />
             <TouchableOpacity
                 onPress={handleOnPress}
                 style={styles.button}

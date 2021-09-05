@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { EmailScreen } from '../screens/EmailScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { PasswordScreen } from '../screens/PasswordScreen';
@@ -14,7 +14,8 @@ export const MyStack = () => {
       screenOptions={{
         cardStyle: {
           backgroundColor: '#FFFFFF'
-        }
+        },
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
       }}
     >
       <Stack.Screen

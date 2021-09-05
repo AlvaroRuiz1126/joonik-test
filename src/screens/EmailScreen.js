@@ -48,7 +48,9 @@ const styles = StyleSheet.create({
         color: '#707070',
         fontWeight: 'bold',
         fontSize: 16,
-        textTransform: 'uppercase'
+        textTransform: 'uppercase',
+        position: 'relative',
+        right: 120
     },
     input: {
         height: 40,

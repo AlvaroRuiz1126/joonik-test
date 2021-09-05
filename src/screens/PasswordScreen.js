@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { getTokenByPassword } from '../service/joonikApi';
 
 export const PasswordScreen = ({ navigation, route }) => {
@@ -16,9 +16,9 @@ export const PasswordScreen = ({ navigation, route }) => {
                     name: resp.name,
                     token: resp.token
                 });
-                setPassword('');
+                //setPassword('');
             }else{
-                console.log("Contraseña ingresada incorrecta");
+                ToastAndroid.show('Contraseña ingresada incorrecta', ToastAndroid.LONG);
             }
         });
     };

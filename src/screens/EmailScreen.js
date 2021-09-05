@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { getTokenByEmail } from '../service/joonikApi';
 
 export const EmailScreen = ({navigation} ) => {
@@ -16,9 +16,9 @@ export const EmailScreen = ({navigation} ) => {
                     email,
                     bearerToken: resp.result
                 });
-                setEmail('');
+                //setEmail('');
             }else{
-                console.log("Email ingresado incorrecto");
+                ToastAndroid.show('Email ingresado incorrecto', ToastAndroid.LONG);
             }
         });
     };

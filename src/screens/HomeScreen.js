@@ -104,7 +104,7 @@ export const HomeScreen = ({navigation, route}) => {
             </Modal>
 
             <FlatList
-                style={{marginTop: 80}}
+                style={{marginTop: 80, marginBottom: 100}}
                 data={posts}
                 renderItem={({item}) => {
                     return (

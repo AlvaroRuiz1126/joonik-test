@@ -37,3 +37,22 @@ export const getPostsWithToken = async (token) => {
     
     return data;
 };
+
+export const addNewPost = async (token, title, content, img) => {
+    const form = new FormData();
+    form.append('title', title);
+    form.append('content', content);
+    form.append('image', img);
+    console.log(form);
+    const resp = await fetch(`${BASE_URL}/posts`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: form
+    });
+    const data = await resp.json();
+
+    return data;
+};

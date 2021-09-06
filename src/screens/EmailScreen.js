@@ -10,17 +10,21 @@ export const EmailScreen = ({navigation} ) => {
     };
 
     const handleOnPress = () => {
-        getTokenByEmail(email).then(resp => {
-            if(resp.result){
-                navigation.navigate('Password', {
-                    email,
-                    bearerToken: resp.result
-                });
-                //setEmail('');
-            }else{
-                ToastAndroid.show('Email ingresado incorrecto', ToastAndroid.LONG);
-            }
-        });
+        if (email === 'example@test.com') {
+            getTokenByEmail(email).then(resp => {
+                if (resp.result) {
+                    navigation.navigate('Password', {
+                        email,
+                        bearerToken: resp.result
+                    });
+                    setEmail('');
+                } else {
+                    ToastAndroid.show(resp.error, ToastAndroid.LONG);
+                }
+            });
+        } else {
+            ToastAndroid.show('Email is incorrect', ToastAndroid.LONG);
+        }
     };
 
     return (

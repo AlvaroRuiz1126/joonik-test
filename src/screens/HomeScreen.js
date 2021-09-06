@@ -1,11 +1,14 @@
 import React from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { Image, Modal, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getPostsWithToken } from '../service/joonikApi';
+import { useState, useEffect } from 'react';
+import { FlatList, Image, Modal, SafeAreaView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { addNewPost, getPostsWithToken } from '../service/joonikApi';
 
 export const HomeScreen = ({navigation, route}) => {
     const [posts, setPosts] = useState([]);
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+    const [img, setImg] = useState();
     const [viewLogout, setViewLogout] = useState(false);
     const [openModal, setOpenModal] = useState(false);
 
@@ -21,11 +24,32 @@ export const HomeScreen = ({navigation, route}) => {
         setOpenModal(true);
     };
 
+    const handleLoadImage = () => {
+        launchImageLibrary({
+            mediaType: 'photo',
+            quality: 0.5
+        }, (resp) => {
+            console.log(resp);
+            if(resp.didCancel) return;
+
+            resp.assets.map(file => setImg(file.uri));
+        });
+    };
+
+    const handleSubmitForm = () => {
+        addNewPost(route.params.token, title, content, img)
+        .then(resp => {
+            if(resp.error){
+                return (ToastAndroid.show(resp.error, ToastAndroid.LONG));
+            }else{
+                return (ToastAndroid.show("The Post has been added successfully", ToastAndroid.LONG))
+            }
+        })
+    };
+
     useEffect(() => {
         getPostsWithToken(route.params.token).then(resp => setPosts(resp));
     }, []);
-
-    //console.log(posts);
 
     return (
         <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10 }}>
@@ -39,33 +63,37 @@ export const HomeScreen = ({navigation, route}) => {
                     </TouchableOpacity>
                 }
             </TouchableOpacity>
+
             <Modal
                 animationType='slide'
                 transparent={true}
                 visible={openModal}
             >
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <View style={{
-                        margin: 20,
-                        backgroundColor: "white",
-                        borderRadius: 20,
-                        padding: 35,
-                        alignItems: "center",
-                        shadowColor: "#000",
-                        shadowOffset: {
-                            width: 0,
-                            height: 2
-                        },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 4,
-                        elevation: 5
-                    }}>
-                        <Pressable style={{ elevation: 2 }} onPress={() => setOpenModal(false)}>
-                            <Text>Hello Modal</Text>
-                        </Pressable>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalTitle}>Create a new Post</Text>
+                        <Text style={styles.modalTxt}>Title</Text>
+                        <TextInput style={styles.input} onChangeText={setTitle} />
+
+                        <Text style={styles.modalTxt}>Content</Text>
+                        <TextInput style={styles.input} onChangeText={setContent} />
+
+                        <Text style={styles.modalTxt}>Image</Text>
+                        <TouchableOpacity style={{backgroundColor: '#888888', width: 80, borderRadius: 20, margin: 12}} activeOpacity={0.7} onPress={handleLoadImage}>
+                            <Text style={{textAlign: 'center', padding: 5, color: '#FFFFFF', textTransform: 'uppercase'}}>Galería</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.saveBtn} onPress={handleSubmitForm}>
+                            <Text style={styles.content}>Save</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setOpenModal(false)}>
+                            <Text style={styles.content}>Cancel</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
+
             {(posts.length > 0)
                 ? posts.map((post, idx) => 
                     <View key={idx}>
@@ -81,8 +109,9 @@ export const HomeScreen = ({navigation, route}) => {
                         </TouchableOpacity>
                     </View>
                 )
-                : <Text>No hay posts por visualizar</Text>
+                : <Text>There aren't posts to see</Text>
             }
+
             <TouchableOpacity style={styles.addBtn} onPress={handleOpenModal}>
                 <Text style={styles.txtAddBtn}>Add New</Text>
             </TouchableOpacity>
@@ -94,8 +123,13 @@ const styles = StyleSheet.create({
     usernameBtn: {
         position: 'absolute',
         top: 0,
-        left: 0,
-        padding: 10
+        left: 10,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#707070',
+        padding: 5,
+        marginTop: 10,
+        borderRadius: 10
     },
     username: {
         fontSize: 16,
@@ -109,6 +143,48 @@ const styles = StyleSheet.create({
         width: 100,
         marginTop: 10,
         borderRadius: 10
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    modalTitle: {
+        fontSize: 16,
+        marginBottom: 20
+    },
+    modalTxt: {
+        color: '#707070',
+        fontSize: 16
+    },
+    input: {
+        height: 40,
+        margin: 12,
+        padding: 10,
+        borderRadius: 20,
+        borderWidth: 1,
+        width: 300,
+        borderColor: '#ACACAC'
+    },
+    saveBtn: {
+        position: 'absolute',
+        bottom: 20,
+        right: 100
+    },
+    cancelBtn: {
+        position: 'absolute',
+        bottom: 20,
+        left: 100
     },
     logoutTxt: {
         fontSize: 14,

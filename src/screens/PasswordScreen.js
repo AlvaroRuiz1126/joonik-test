@@ -16,9 +16,9 @@ export const PasswordScreen = ({ navigation, route }) => {
                     name: resp.name,
                     token: resp.token
                 });
-                //setPassword('');
+                setPassword('');
             }else{
-                ToastAndroid.show('Contraseña ingresada incorrecta', ToastAndroid.LONG);
+                ToastAndroid.show(resp.error, ToastAndroid.LONG);
             }
         });
     };

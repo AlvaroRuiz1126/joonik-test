@@ -29,19 +29,28 @@ export const HomeScreen = ({navigation, route}) => {
             mediaType: 'photo',
             quality: 0.5
         }, (resp) => {
-            console.log(resp);
             if(resp.didCancel) return;
+            if(!resp.assets[0].uri) return;
 
-            resp.assets.map(file => setImg(file.uri));
+            setImg(resp.assets[0]);
         });
     };
 
     const handleSubmitForm = () => {
+        if(title === '') return ToastAndroid.show('The title is required', ToastAndroid.LONG);
+        if(content === '') return ToastAndroid.show('A content for post is required', ToastAndroid.LONG);
+        if(!img) return ToastAndroid.show('You must upload an image for post', ToastAndroid.LONG);
+
         addNewPost(route.params.token, title, content, img)
         .then(resp => {
             if(resp.error){
                 return (ToastAndroid.show(resp.error, ToastAndroid.LONG));
             }else{
+                setTitle('');
+                setContent('');
+                setImg();
+                setOpenModal(false);
+
                 return (ToastAndroid.show("The Post has been added successfully", ToastAndroid.LONG))
             }
         })
@@ -49,7 +58,7 @@ export const HomeScreen = ({navigation, route}) => {
 
     useEffect(() => {
         getPostsWithToken(route.params.token).then(resp => setPosts(resp));
-    }, []);
+    }, [openModal]);
 
     return (
         <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10 }}>
@@ -94,23 +103,25 @@ export const HomeScreen = ({navigation, route}) => {
                 </View>
             </Modal>
 
-            {(posts.length > 0)
-                ? posts.map((post, idx) => 
-                    <View key={idx}>
+            <FlatList
+                style={{marginTop: 80}}
+                data={posts}
+                renderItem={({item}) => {
+                    return (
                         <TouchableOpacity style={styles.btn} activeOpacity={1}>
                             <View>
-                                <Image style={styles.img} source={{ uri: post.image }} />
+                                <Image style={styles.img} source={{ uri: item.image }} />
                             </View>
 
                             <View>
-                                <Text style={styles.title}>{post.title}</Text>
-                                <Text style={styles.content}>{post.content}</Text>
+                                <Text style={styles.title}>{item.title}</Text>
+                                <Text style={styles.content}>{item.content}</Text>
                             </View>
                         </TouchableOpacity>
-                    </View>
-                )
-                : <Text>There aren't posts to see</Text>
-            }
+                    );
+                }}
+                keyExtractor={item => item.image}
+            />
 
             <TouchableOpacity style={styles.addBtn} onPress={handleOpenModal}>
                 <Text style={styles.txtAddBtn}>Add New</Text>
@@ -199,7 +210,9 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         borderColor: '#ACACAC',
         padding: 10,
-        flexDirection: 'column'
+        flexDirection: 'column',
+        marginBottom: 10,
+        width: 300
     },
     title: {
         fontSize: 21,

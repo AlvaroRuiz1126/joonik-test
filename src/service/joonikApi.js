@@ -1,3 +1,5 @@
+import { Platform } from "react-native";
+
 const BASE_URL = 'https://api.joonik.com';
 
 export const getTokenByEmail = async (email) => {
@@ -42,8 +44,11 @@ export const addNewPost = async (token, title, content, img) => {
     const form = new FormData();
     form.append('title', title);
     form.append('content', content);
-    form.append('image', img);
-    console.log(form);
+    form.append('image', {
+        name: img.fileName,
+        type: img.type,
+        uri: (Platform.OS === 'android') ? img.uri : img.uri.replace('file://', '')
+    });
     const resp = await fetch(`${BASE_URL}/posts`, {
         method: 'POST',
         headers: {
